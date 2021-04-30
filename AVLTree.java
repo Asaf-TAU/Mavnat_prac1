@@ -12,11 +12,12 @@
 
 public class AVLTree {
 
+    public static AVLNode root;
     /**
      * This constructor creates an empty AVLTree.
      */
     public AVLTree(){
-        return; //to be replaced by student code
+        this.root = new AVLNode();
     }
 
     /**
@@ -25,7 +26,7 @@ public class AVLTree {
      * returns true if and only if the tree is empty
      */
     public boolean empty() {
-        return false; // to be replaced by student code
+        return !this.root.isRealNode();
     }
 
     /**
