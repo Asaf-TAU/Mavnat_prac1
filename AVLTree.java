@@ -176,60 +176,95 @@ public class AVLTree {
      * according to your needs.
      */
     public class AVLNode {
+        private int key;
+        private boolean info;
+        private int height;
+        private AVLNode leftChild;
+        private AVLNode rightChild;
+        private AVLNode parent;
+
+        public AVLNode() {  // virtual node
+            this.key = -1;
+        }
+
+        public AVLNode(int key, boolean info, int height) {  // creates node with key and value
+            this.key = key;
+            this.info = info;
+            this.height = height;
+        }
 
         //returns node's key (for virtual node return -1)
         public int getKey() {
-            return 42; // to be replaced by student code
+            return this.key;
         }
 
         //returns node's value [info] (for virtual node return null)
         public Boolean getValue() {
-            return false; // to be replaced by student code
+            if (!this.isRealNode()) {
+                return null;
+            }
+            return this.info;
         }
 
         //sets left child
         public void setLeft(AVLNode node) {
-            return; // to be replaced by student code
+            this.leftChild = node;
+            return;
         }
 
         //returns left child (if there is no left child return null)
         public AVLNode getLeft() {
-            return null; // to be replaced by student code
+            if (!this.leftChild.isRealNode()) {
+                return null;
+            }
+            return this.leftChild;
         }
 
         //sets right child
         public void setRight(AVLNode node) {
-            return; // to be replaced by student code
+            this.rightChild = node;
+            return;
         }
 
         //returns right child (if there is no right child return null)
         public AVLNode getRight() {
-            return null; // to be replaced by student code
+            if (!this.rightChild.isRealNode()) {
+                return null;
+            }
+            return this.rightChild;
         }
 
         //sets parent
         public void setParent(AVLNode node) {
-            return; // to be replaced by student code
+            this.parent = node;
+            return;
         }
 
         //returns the parent (if there is no parent return null)
         public AVLNode getParent() {
-            return null; // to be replaced by student code
+            return this.parent;
         }
 
         // Returns True if this is a non-virtual AVL node
         public boolean isRealNode() {
-            return true; // to be replaced by student code
+            if (this.getKey() != -1) {
+                return true;
+            }
+            return false;
         }
 
         // sets the height of the node
         public void setHeight(int height) {
-            return; // to be replaced by student code
+            this.height = height;
+            return;
         }
 
         // Returns the height of the node (-1 for virtual nodes)
         public int getHeight() {
-            return 42; // to be replaced by student code
+            if (!this.isRealNode()) {
+                return -1;
+            }
+            return this.height;
         }
     }
 
