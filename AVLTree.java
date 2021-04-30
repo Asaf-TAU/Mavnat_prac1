@@ -12,7 +12,7 @@
 
 public class AVLTree {
 
-    public static AVLNode root;
+    public AVLNode root;
     /**
      * This constructor creates an empty AVLTree.
      */
