@@ -72,8 +72,6 @@ public class AVLTree {
     	AVLNode curr = this.root;
         if (curr.getKey() == -1) {
     		curr = new AVLNode(k, i, 0);
-    		curr.setLeft(new AVLNode());
-    		curr.setRight(new AVLNode());
     		this.root = curr;
     		this.root.setParent(null);
     		return 1;
@@ -100,11 +98,9 @@ public class AVLTree {
         }
 
         if (k > curr.getKey()) {
-            curr.setRight(new AVLNode(k, i, curr.getHeight() + 1));
-            curr.setMax(curr.getRight());
+            curr.setRight(new AVLNode(k, i, 0));
         } else {
-            curr.setLeft(new AVLNode(k, i, curr.getHeight() + 1));
-            curr.setMin(curr.getLeft());
+            curr.setLeft(new AVLNode(k, i, 0));
         }
         
         // after done with the insertion, will now update the parent's fields who were involved in the insertion process.
@@ -262,12 +258,6 @@ public class AVLTree {
     	L.setParent(N.getParent());
     	N.setParent(L);
     	
-    	//updating the min-s and max-s
-    	L.setMax(N.getMax());
-    	if (subT2.getMin() != null) {
-    		N.setMin(subT2.getMin());
-    	}
-    	
     	// return the new root 
     	return L;
     	
@@ -291,12 +281,6 @@ public class AVLTree {
     	R.setParent(N.getParent());
     	N.setParent(R);
     	
-    	// updating the min-s and max-s
-    	R.setMin(N.getMin());
-    	if (subT1.getMax() != null) {
-    		N.setMax(subT1.getMax());
-    	}
-    	
     	// return the new root
     	return R;
     }
@@ -309,10 +293,14 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public Boolean min() {
-    	if (this.root.getMin().isRealNode()) {
-    		return this.root.getMin().getValue();
+    	if (!this.root.isRealNode()) {
+    		return null;
     	}
-        return null;
+    	AVLNode curr = this.root;
+    	while (curr.getLeft() != null) {
+    		curr = curr.getLeft();
+    	}
+    	return curr.getValue();
     }
 
     /**
@@ -322,10 +310,14 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public Boolean max() {
-    	if (this.root.getMax().isRealNode()) {
-    		return this.root.getMax().getValue();
+    	if (!this.root.isRealNode()) {
+    		return null;
     	}
-        return null;
+    	AVLNode curr = this.root;
+    	while (curr.getRight() != null) {
+    		curr = curr.getRight();
+    	}
+    	return curr.getValue();
     }
 
     /**
@@ -335,8 +327,11 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
+    	if (!this.root.isRealNode()) {
+    		return new int[] {};
+    	}
         int[] array = new int[this.size()];
-        AVLNode curr = this.getRoot();
+        AVLNode curr = this.root;
         keysToArray_rec(curr, array, 0);
         return array;
     }
@@ -360,8 +355,11 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public boolean[] infoToArray() {
+    	if (!this.root.isRealNode()) {
+    		return new boolean[] {};
+    	}
         boolean[] array = new boolean[this.size()];
-        AVLNode curr = this.getRoot();
+        AVLNode curr = this.root;
         infoToArray_rec(curr, array, 0);
         return array;
     }
@@ -425,7 +423,11 @@ public class AVLTree {
      */
     public AVLNode successor(AVLNode node){
         if (node.getRight() != null) {
-        	return node.getRight().getMin();
+        	AVLNode curr = node.getRight();
+        	while (curr.getLeft() != null) {
+        		curr = curr.getLeft();
+        	}
+        	return curr;
         }
         AVLNode parent = node.getParent();
         while (parent != null && node == parent.getRight()) {
@@ -568,8 +570,6 @@ public class AVLTree {
         private AVLNode leftChild;
         private AVLNode rightChild;
         private AVLNode parent;
-        private AVLNode min;
-        private AVLNode max;
         private int size;
         
         public AVLNode() {  // virtual node
@@ -584,8 +584,6 @@ public class AVLTree {
             this.rightChild = new AVLNode();
             this.leftChild = new AVLNode();
             this.size = 1;
-            this.min = this;
-            this.max = this;
         }
 
         //returns node's key (for virtual node return -1)
@@ -604,6 +602,8 @@ public class AVLTree {
         //sets left child
         public void setLeft(AVLNode node) {
             this.leftChild = node;
+            this.setHeight(Math.max(this.getLeft().getHeight(), this.getParent().getHeight()) + 1);
+            this.setSize(this.getLeft().getSize() + this.getRight().getSize() + 1);
             return;
         }
 
@@ -618,6 +618,8 @@ public class AVLTree {
         //sets right child
         public void setRight(AVLNode node) {
             this.rightChild = node;
+            this.setHeight(Math.max(this.getLeft().getHeight(), this.getParent().getHeight()) + 1);
+            this.setSize(this.getLeft().getSize() + this.getRight().getSize() + 1);
             return;
         }
 
@@ -670,28 +672,7 @@ public class AVLTree {
         }
         
         
-        // getting and setting min and max 
-        public AVLNode getMin() {
-        	if (this.getKey() == -1) {
-        		return this;
-        	}
-        	return this.min;
-        }
-        
-        public void setMin(AVLNode min) {
-        	this.min = min;
-        }
-        
-        public AVLNode getMax() {
-        	if (this.getKey() == -1) {
-        		return this;
-        	}
-        	return this.max;
-        }
-        
-        public void setMax(AVLNode max) {
-        	this.max = max;
-        }
+        // getting and setting the 'size' variable
         
         public int getSize() {
         	if (this.getKey() == -1) {

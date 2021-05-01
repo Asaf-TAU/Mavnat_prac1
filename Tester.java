@@ -8,6 +8,7 @@ public class Tester {
         testTree.insert(2, false);
         testTree.insert(4, false);
         testTree.insert(8, false);
+        testTree.printTree(testTree.getRoot());;
         testTree.insert(11, false);
         testTree.insert(6, false);
         System.out.println(testTree);
