@@ -276,7 +276,10 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public Boolean min() {
-        return null; // to be replaced by student code
+    	if (this.root.getMin() != null) {
+    		return this.root.getMin().getValue();
+    	}
+        return null;
     }
 
     /**
@@ -286,7 +289,10 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public Boolean max() {
-        return null; // to be replaced by student code
+    	if (this.root.getMax() != null) {
+    		return this.root.getMax().getValue();
+    	}
+        return null;
     }
 
     /**
@@ -296,8 +302,21 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public int[] keysToArray() {
-        int[] arr = new int[42]; // to be replaced by student code
-        return arr;              // to be replaced by student code
+        int[] array = new int[this.size()];
+        AVLNode curr = this.getRoot();
+        keysToArray_rec(curr, array, 0);
+        return array;
+    }
+    
+    private int keysToArray_rec(AVLNode N, int[] arr, int pos) {
+    	if (N.getLeft() != null) {
+    		pos = keysToArray_rec(N.getLeft(), arr, pos);
+    	}
+    	arr[pos++] = N.getKey();
+    	if (N.getRight() != null) {
+    		pos = keysToArray_rec(N.getRight(), arr, pos);
+    	}
+    	return pos;
     }
 
     /**
@@ -308,17 +327,31 @@ public class AVLTree {
      * or an empty array if the tree is empty.
      */
     public boolean[] infoToArray() {
-        boolean[] arr = new boolean[42]; // to be replaced by student code
-        return arr;                    // to be replaced by student code
+        boolean[] array = new boolean[this.size()];
+        AVLNode curr = this.getRoot();
+        infoToArray_rec(curr, array, 0);
+        return array;
     }
 
+    private int infoToArray_rec(AVLNode N, boolean[] arr, int pos) {
+    	if (N.getLeft() != null) {
+    		pos = infoToArray_rec(N.getLeft(), arr, pos);
+    	}
+    	arr[pos++] = N.getValue();
+    	if (N.getRight() != null) {
+    		pos = infoToArray_rec(N.getRight(), arr, pos);
+    	}
+    	return pos;
+    }
+    
+    
     /**
      * public int size()
      * <p>
      * Returns the number of nodes in the tree.
      */
     public int size() {
-        return 42; // to be replaced by student code
+        this.root.getSize();
     }
 
     /**
@@ -327,7 +360,10 @@ public class AVLTree {
      * Returns the root AVL node, or null if the tree is empty
      */
     public AVLNode getRoot() {
-        return null;
+    	if (this.root.getKey() == -1) {
+    		return null;
+    	}
+        return this.root;
     }
 
     /**
@@ -352,7 +388,16 @@ public class AVLTree {
      * @return the successor of 'node' if exists, null otherwise
      */
     public AVLNode successor(AVLNode node){
-        return null;
+        if (node.getRight() != null) {
+        	return node.getRight().getMin();
+        }
+        
+        AVLNode parent = node.getParent();
+        while (parent != null && node == parent.getRight()) {
+        	node = parent;
+        	parent = parent.getParent();
+        }
+        return parent;
     }
 
     /**
@@ -387,7 +432,10 @@ public class AVLTree {
         private AVLNode leftChild;
         private AVLNode rightChild;
         private AVLNode parent;
-
+        private AVLNode min;
+        private AVLNode max;
+        private int size;
+        
         public AVLNode() {  // virtual node
             this.key = -1;
         }
@@ -472,11 +520,46 @@ public class AVLTree {
             return this.height;
         }
         
-        private int getBalance() {
+        public int getBalance() {
         	if (this.getKey() == -1) {
         		return 0;
         	}
         	return this.getLeft().getHeight() - this.getRight().getHeight();
+        }
+        
+        
+        // getting and setting min and max 
+        public AVLNode getMin() {
+        	if (this.getKey() == -1) {
+        		return null;
+        	}
+        	return this.min;
+        }
+        
+        public void setMin(AVLNode min) {
+        	this.min = min;
+        }
+        
+        public AVLNode getMax() {
+        	if (this.getKey() == -1) {
+        		return null;
+        	}
+        	return this.max;
+        }
+        
+        public void setMax(AVLNode max) {
+        	this.max = max;
+        }
+        
+        public int getSize() {
+        	if (this.getKey() == -1) {
+        		return 0;
+        	}
+        	return this.size;
+        }
+        
+        public void setSize(int size) {
+        	this.size = size;
         }
     }
 
