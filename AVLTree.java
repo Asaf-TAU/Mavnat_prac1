@@ -248,7 +248,6 @@ public class AVLTree {
     	// rotating sub-trees and nodes
     	L.setRight(N);
     	N.setLeft(subT2);
-    	subT2.setParent(N);
     	
     	// return the new root 
     	return L;
@@ -263,7 +262,6 @@ public class AVLTree {
     	// rotating sub-trees and nodes
     	R.setLeft(N);
     	N.setRight(subT1);
-    	subT1.setParent(N);
     	
     	// return the new root
     	return R;
