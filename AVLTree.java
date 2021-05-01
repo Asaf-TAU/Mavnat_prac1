@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * public class AVLNode
  * <p>
@@ -66,80 +70,95 @@ public class AVLTree {
      */
     public int insert(int k, boolean i) {
     	AVLNode curr = this.root;
-        
-    	if (curr.getKey() == -1) {
+        if (curr.getKey() == -1) {
     		curr = new AVLNode(k, i, 0);
     		curr.setLeft(new AVLNode());
     		curr.setRight(new AVLNode());
-    		curr.setParent(curr);
+    		this.root = curr;
+    		this.root.setParent(null);
     		return 1;
     	}
-        
+
         while (curr.getKey() != -1) { // similar process to the 'search' method, just with the feature of updating the 'direction' variable.
         	if (curr.getKey() == k) {
         		return -1;
-         	} else {
-         		if (curr.getKey() > k) {
+         	}
+        	else {
+         		if (k > curr.getKey() && curr.getRight() != null) {
          			curr = curr.getRight();
-         		} else {
+         		}
+         		else if (k > curr.getKey()) {
+         		    break;
+                }
+         		else if (k < curr.getKey() && curr.getLeft() != null) {
          			curr = curr.getLeft();
          		}
+         		else if (k < curr.getKey()) {
+         		    break;
+                }
          	}
+        }
+
+        if (k > curr.getKey()) {
+            curr.setRight(new AVLNode(k, i, curr.getHeight() + 1));
+        } else {
+            curr.setLeft(new AVLNode(k, i, curr.getHeight() + 1));
         }
         
         // after done with the insertion, will now update the parent's fields who were involved in the insertion process.
-        AVLNode curr_parent = curr.getParent();
-        AVLNode tmp = new AVLNode(k, i, 0);
+//        AVLNode curr_parent = curr.getParent();
+//        AVLNode tmp = new AVLNode(k, i, 0);
         
         // making sure the inserted node has virtual sons + updating the inserted node's parents
-        tmp.setLeft(new AVLNode());
-        tmp.setRight(new AVLNode());
-        tmp.setParent(curr_parent);
+//        tmp.setLeft(new AVLNode());
+//        tmp.setRight(new AVLNode());
+//        tmp.setParent(curr_parent);
         
         // initializing the output variable 'changes' which will hold the amount of rotations and height changes done due to the insertion
-        int changes = 1;
-        boolean changed = false; // determines whether the parent's height of the inserted node has changed or not 
-        
-        if (curr_parent.getLeft() == null && curr_parent.getRight() == null) {
-        	curr_parent.setHeight(curr_parent.getHeight() + 1);
-        	changes++;
-        	changed = true;
-        }
-        
-        if (k < curr_parent.getKey()) {
-        	curr_parent.setLeft(tmp);
-        } else {
-        	curr_parent.setRight(tmp);
-        }
+//        int changes = 1;
+//        boolean changed = false; // determines whether the parent's height of the inserted node has changed or not
+
+//        if (curr_parent.getLeft() == null && curr_parent.getRight() == null) {
+//        	curr_parent.setHeight(curr_parent.getHeight() + 1);
+//        	changes++;
+//        	changed = true;
+//        }
+
+//        if (k < curr_parent.getKey()) {
+//        	curr_parent.setLeft(tmp);
+//        } else {
+//        	curr_parent.setRight(tmp);
+//        }
         	
         // we will now iterate from bottom to up through all of the parents and perform rotations on those who deviate from the Balance-factor requirement.
-        int BF;
-        curr_parent = curr_parent.getParent();
-        while (curr_parent != null) {
-        	BF = curr_parent.getBalance();
-        	if (Math.abs(BF) < 2 && !changed) {
-        		break;
-        	} else if (Math.abs(BF) < 2) {
-        		curr_parent = curr_parent.getParent();
-        	} else { // a rotation needs to be performed + higher the 'changes' (the output of this method) by one.
-        		changes++;
-        		if (BF > 0) {
-        			if (curr_parent.getKey() < curr_parent.getParent().getKey()) {
-        				curr_parent.getParent().setLeft(rightRotate(curr_parent));
-        			} else {
-        				curr_parent.getParent().setRight(rightRotate(curr_parent));
-        			}
-        		} else {
-        			if (curr_parent.getKey() < curr_parent.getParent().getKey()) {
-        				curr_parent.getParent().setLeft(leftRotate(curr_parent));
-        			} else {
-        				curr_parent.getParent().setRight(leftRotate(curr_parent));
-        			}
-        		}
-        		break;
-        	}
-        }
-        return changes;
+//        int BF;
+//        curr_parent = curr_parent.getParent();
+//        while (curr_parent != null) {
+//        	BF = curr_parent.getBalance();
+//        	if (Math.abs(BF) < 2 && !changed) {
+//        		break;
+//        	} else if (Math.abs(BF) < 2) {
+//        		curr_parent = curr_parent.getParent();
+//        	} else { // a rotation needs to be performed + higher the 'changes' (the output of this method) by one.
+//        		changes++;
+//        		if (BF > 0) {
+//        			if (curr_parent.getKey() < curr_parent.getParent().getKey()) {
+//        				curr_parent.getParent().setLeft(rightRotate(curr_parent));
+//        			} else {
+//        				curr_parent.getParent().setRight(rightRotate(curr_parent));
+//        			}
+//        		} else {
+//        			if (curr_parent.getKey() < curr_parent.getParent().getKey()) {
+//        				curr_parent.getParent().setLeft(leftRotate(curr_parent));
+//        			} else {
+//        				curr_parent.getParent().setRight(leftRotate(curr_parent));
+//        			}
+//        		}
+//        		break;
+//        	}
+//        }
+//        return changes;
+        return 0;
     }
 
     
@@ -360,9 +379,15 @@ public class AVLTree {
      * Returns the root AVL node, or null if the tree is empty
      */
     public AVLNode getRoot() {
+<<<<<<< HEAD
     	if (this.root.getKey() == -1) {
     		return null;
     	}
+=======
+        if (this.empty()) {
+            return null;
+        }
+>>>>>>> 8345698... PrintTree and modified insert
         return this.root;
     }
 
@@ -413,6 +438,107 @@ public class AVLTree {
         return false;
     }
 
+	
+    public int getTreeHeight(AVLNode node) {
+        if (node == null) {
+            return -1;
+        }
+        else {
+            return 1 + Math.max(getTreeHeight(node.leftChild), getTreeHeight(node.rightChild));
+        }
+    }
+
+    public void printTree(AVLNode root) {
+        if (this.empty()) {
+            System.out.println("Tree is empty.");
+        }
+        int treeHeight =getTreeHeight(root);
+        int treeWidth = (int) Math.pow(2, treeHeight);
+
+        List<AVLNode> curr = new ArrayList<AVLNode>(1), next = new ArrayList<AVLNode>(2);
+        curr.add(root);
+
+        final int maxHalfLength = 4;
+        int elements = 1;
+
+        StringBuilder sb = new StringBuilder(maxHalfLength * treeWidth);
+        for(int i = 0; i < maxHalfLength * treeWidth; i++)
+            sb.append(' ');
+        String textBuffer;
+
+        // Iterating through height levels.
+        for(int i = 0; i < treeHeight; i++) {
+
+            sb.setLength(maxHalfLength * ((int)Math.pow(2, treeHeight-1-i) - 1));
+
+            // Creating spacer space indicator.
+            textBuffer = sb.toString();
+
+            // Print tree node elements
+            for(AVLNode n : curr) {
+
+                System.out.print(textBuffer);
+
+                if(n == null) {
+
+                    System.out.print("        ");
+                    next.add(null);
+                    next.add(null);
+
+                } else {
+
+                    if (n.getKey() != -1) {
+                        System.out.printf("(%6d)", n.getKey());
+                    }
+                    else {
+                        System.out.printf("        ");
+                    }
+                    next.add(n.leftChild);
+                    next.add(n.rightChild);
+
+                }
+
+                System.out.print(textBuffer);
+
+            }
+
+            System.out.println();
+            // Print tree node extensions for next level.
+            if(i < treeHeight - 1) {
+
+                for(AVLNode n : curr) {
+
+                    System.out.print(textBuffer);
+
+                    if(n == null)
+                        System.out.print("        ");
+                    else
+                        System.out.printf("%s      %s",
+                                n.leftChild == null ? " " : "/", n.rightChild == null ? " " : "\\");
+
+                    System.out.print(textBuffer);
+
+                }
+
+                System.out.println();
+
+            }
+
+            // Renewing indicators for next run.
+            elements *= 2;
+            curr = next;
+            next = new ArrayList<AVLNode>(elements);
+
+        }
+        System.out.println("Done.");
+    }
+
+	
+	
+	
+	
+	
+	
 
     /**
      * public class AVLNode
