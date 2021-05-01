@@ -351,7 +351,7 @@ public class AVLTree {
      * Returns the number of nodes in the tree.
      */
     public int size() {
-        this.root.getSize();
+        return this.root.getSize();
     }
 
     /**
