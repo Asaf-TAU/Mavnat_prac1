@@ -250,14 +250,6 @@ public class AVLTree {
     	N.setLeft(subT2);
     	subT2.setParent(N);
     	
-    	// updating heights
-    	N.setHeight(Math.max(N.getLeft().getHeight(), N.getParent().getHeight()) + 1);
-    	L.setHeight(Math.max(L.getLeft().getHeight(), L.getRight().getHeight()) + 1);
-    	
-    	// updating parents
-    	L.setParent(N.getParent());
-    	N.setParent(L);
-    	
     	// return the new root 
     	return L;
     	
@@ -272,14 +264,6 @@ public class AVLTree {
     	R.setLeft(N);
     	N.setRight(subT1);
     	subT1.setParent(N);
-    	
-    	// updating heights
-    	N.setHeight(Math.max(N.getLeft().getHeight(), N.getParent().getHeight()) + 1);
-    	R.setHeight(Math.max(R.getLeft().getHeight(), R.getRight().getHeight()) + 1);
-    	
-    	// updating parents
-    	R.setParent(N.getParent());
-    	N.setParent(R);
     	
     	// return the new root
     	return R;
