@@ -604,6 +604,7 @@ public class AVLTree {
             this.leftChild = node;
             this.setHeight(Math.max(this.getLeft().getHeight(), this.getParent().getHeight()) + 1);
             this.setSize(this.getLeft().getSize() + this.getRight().getSize() + 1);
+            this.getLeft().setParent(this);
             return;
         }
 
@@ -620,6 +621,7 @@ public class AVLTree {
             this.rightChild = node;
             this.setHeight(Math.max(this.getLeft().getHeight(), this.getParent().getHeight()) + 1);
             this.setSize(this.getLeft().getSize() + this.getRight().getSize() + 1);
+            this.getRight().setParent(this);
             return;
         }
 
