@@ -116,56 +116,104 @@ public class AVLTree {
         	changes++;
         }
         	
-        // we will now iterate from bottom to up through all of the parents and perform rotations on those who deviate from the Balance-factor requirement.
-        int BF;
-        
-        while (curr != null) {
-        	curr.setSize(curr.getSize() + 1);
-        	curr.setXOR(Boolean.logicalXor(curr.leftChild.getXOR(), curr.rightChild.getXOR()));
-        	BF = curr.getBalance();
-        	if (curr.getHeight() < prev.getHeight() + 1) {
-        		changed = true;
-        		changes++;
-        	}
-        	if (Math.abs(BF) < 2 && !changed) {
-        		if (!i || curr.getParent() == null) {
-        			break;
-        		} 
-        	} else if (Math.abs(BF) < 2) {
-        		if (curr.getParent() == null) {
-        			return changes;
-        		}
-        		prev = curr;
-        		curr = curr.getParent();
-        	} else { // a rotation needs to be performed + higher the 'changes' (the output of this method) by one.
-        		changes++;
-        		if (BF > 0) {
-
-        			
-        			// left left case - one rotation
-        			if (k < prev.getKey()) {
-        				curr = rightRotate(curr);
-        			} else { // left right case - two rotations
-        				prev = leftRotate(prev);
-        				curr = rightRotate(curr);
-        			}
-        		} else {
-        			if (k > prev.getKey()) {
-        				curr = leftRotate(curr);
-        			} else {
-        				prev = rightRotate(prev);
-        				curr = leftRotate(curr);
-        				}
-        		}
-        		if (!i || curr.getParent() == null) {
-        			break;
-        		}
-        	}
-        }
+//        // we will now iterate from bottom to up through all of the parents and perform rotations on those who deviate from the Balance-factor requirement.
+//        int BF;
+//        
+//        while (curr != null) {
+//        	curr.setSize(curr.getSize() + 1);
+//        	curr.setXOR(Boolean.logicalXor(curr.leftChild.getXOR(), curr.rightChild.getXOR()));
+//        	BF = curr.BalanceFactor();
+//        	if (curr.getHeight() < prev.getHeight() + 1) {
+//        		changed = true;
+//        		changes++;
+//        	}
+//        	if (Math.abs(BF) < 2 && !changed) {
+//        		if (!i || curr.getParent() == null) {
+//        			break;
+//        		} 
+//        	} else if (Math.abs(BF) < 2) {
+//        		if (curr.getParent() == null) {
+//        			return changes;
+//        		}
+//        		prev = curr;
+//        		curr = curr.getParent();
+//        	} else { // a rotation needs to be performed + higher the 'changes' (the output of this method) by one.
+//        		changes++;
+//        		if (BF > 0) {
+//
+//        			
+//        			// left left case - one rotation
+//        			if (k < prev.getKey()) {
+//        				curr = rightRotation(curr);
+//        			} else { // left right case - two rotations
+//        				prev = leftRotation(prev);
+//        				curr = rightRotation(curr);
+//        			}
+//        		} else {
+//        			if (k > prev.getKey()) {
+//        				curr = leftRotation(curr);
+//        			} else {
+//        				prev = rightRotation(prev);
+//        				curr = leftRotation(curr);
+//        				}
+//        		}
+//        		if (!i || curr.getParent() == null) {
+//        			break;
+//        		}
+//        	}
+//        }
         return changes;
     }
 
+    public int insert2(int k, boolean i) {
+    	int[] changes = new int[2];
+    	this.root = insert_rec(this.getRoot(), new AVLNode(k,i,0), changes);
+    	this.printTree(this.getRoot());
+    	System.out.println(this.getRoot().BalanceFactor());
+    	return changes[0];
+    	
+    }
     
+    public AVLNode insert_rec(AVLNode node, AVLNode new_node, int[] change_info) {
+    	if (node == null) {
+    		return new_node;
+    	}
+    	
+    	if (new_node.getKey() < node.getKey()) {
+    		node.setLeft(insert_rec(node.getLeft(), new_node, change_info));
+    	} else if (new_node.getKey() > node.getKey()){
+    		node.setRight(insert_rec(node.getRight(), new_node, change_info));
+    	} else {
+    		return node;
+    	}
+    	
+    	int BF = node.BalanceFactor();
+    	
+    	if (Math.abs(BF) > 1) {
+    		change_info[0]++;
+    	} else {
+        	if (node.update_info()) {
+        		change_info[0]++;
+        	}
+        	return node;
+    	}
+    	
+    	if (BF > 1 && new_node.getKey() < node.getLeft().getKey()) { 
+    		return rightRotation(node);
+    	} else if (BF > 1 && new_node.getKey() > node.getLeft().getKey()) {
+    		node.setLeft(leftRotation(node.getLeft()));
+    		return rightRotation(node);
+    	} else if (BF < -1 && new_node.getKey() > node.getLeft().getKey()) {
+    		return leftRotation(node);
+    	} else if (BF < - 1 && new_node.getKey() < node.getLeft().getKey()) {
+    		node.setRight(rightRotation(node.getRight()));
+    		return leftRotation(node);
+    	}
+    	
+    	return node;
+    }
+    
+
     /**
      * public int delete(int k)
      * <p>
@@ -217,7 +265,7 @@ public class AVLTree {
         
         int BF = 0;
         while (curr_parent != null) {
-        	BF = curr_parent.getBalance();
+        	BF = curr_parent.BalanceFactor();
         	if (Math.abs(BF) < 2 && !changed) {
         		break;
         	} else if (Math.abs(BF) < 2) {
@@ -225,16 +273,16 @@ public class AVLTree {
         	} else {
         		changes++;
         		if (BF > 0) {
-        			if (curr_parent.getLeft().getBalance() >= 0) {
-        				curr_parent.getParent().setLeft(rightRotate(curr_parent));
+        			if (curr_parent.getLeft().BalanceFactor() >= 0) {
+        				curr_parent.getParent().setLeft(rightRotation(curr_parent));
         			} else {
-        				curr_parent.getParent().setRight(rightRotate(curr_parent));
+        				curr_parent.getParent().setRight(rightRotation(curr_parent));
         			}
         		} else {
         			if (curr_parent.getKey() < curr_parent.getParent().getKey()) {
-        				curr_parent.getParent().setLeft(leftRotate(curr_parent));
+        				curr_parent.getParent().setLeft(leftRotation(curr_parent));
         			} else {
-        				curr_parent.getParent().setRight(leftRotate(curr_parent));
+        				curr_parent.getParent().setRight(leftRotation(curr_parent));
         			}
         		}
         	}
@@ -246,29 +294,38 @@ public class AVLTree {
     }
     
     
-    private AVLNode rightRotate(AVLNode N) {
-    	AVLNode L = N.leftChild;
-    	AVLNode subT2 = L.rightChild;
+    private AVLNode rightRotation(AVLNode N) {
+    	AVLNode L = N.getLeft();
+    	AVLNode subT2 = L.getRight() != null ? L.getRight() : new AVLNode();
     	
     	// rotating sub-trees and nodes
     	L.setParent(N.getParent());
     	L.setRight(N);
     	N.setLeft(subT2);
     	
+    	
+    	// updating the height, size, XOR variables of the nodes based of its sub-trees values
+    	N.update_info();
+    	L.update_info();
+    	
     	// return the new root 
     	return L;
-    	
+
     }
     
     
-    private AVLNode leftRotate(AVLNode N) {
-    	AVLNode R = N.rightChild;
-    	AVLNode subT1 = R.leftChild;
+    private AVLNode leftRotation(AVLNode N) {
+    	AVLNode R = N.getRight();
+    	AVLNode subT1 = R.getLeft() != null ? R.getLeft() : new AVLNode();
     	
     	// rotating sub-trees and nodes
     	R.setParent(N.getParent());
     	R.setLeft(N);
     	N.setRight(subT1);
+    	
+    	// updating the height, size, XOR variables of the nodes based of its sub-trees values
+    	N.update_info();
+    	R.update_info();
     	
     	// return the new root
     	return R;
@@ -466,7 +523,9 @@ public class AVLTree {
         if (node == null) {
             return -1;
         }
-        return node.getHeight();
+        else {
+            return 1 + Math.max(getTreeHeight(node.leftChild), getTreeHeight(node.rightChild));
+        }
     }
 
     public void printTree(AVLNode root) {
@@ -551,7 +610,7 @@ public class AVLTree {
             next = new ArrayList<AVLNode>(elements);
 
         }
-        System.out.println("Done.");
+        System.out.println("\n\n");
     }
 
 	
@@ -580,7 +639,7 @@ public class AVLTree {
         private AVLNode rightChild;
         private AVLNode parent;
         private int size;
-        private boolean XOR ; // tracks the XOR of all of the nodes in the tree whose root is this AVLNode
+        private boolean XOR = false ; // tracks the XOR of all of the nodes in the tree whose root is this AVLNode
         
         public AVLNode() {  // virtual node
             this.key = -1;
@@ -612,16 +671,9 @@ public class AVLTree {
         //sets left child
         public void setLeft(AVLNode node) {
             this.leftChild = node;
-            if (node.isRealNode()) {
-            	if (this.getRight() != null) {
-                	this.setHeight(Math.max(this.getLeft().getHeight(), this.getParent().getHeight()) + 1);
-                } else {
-                	this.setHeight(this.getLeft().getHeight() + 1);
-                }
-            }
-            this.setSize(this.leftChild.getSize() + this.rightChild.getSize() + 1);
             this.leftChild.setParent(this);
-            return;
+            this.setSize(this.leftChild.getSize() + this.rightChild.getSize() + 1);
+            this.setXOR(Boolean.logicalXor(this.getXOR(), node.getXOR()));
         }
 
         //returns left child (if there is no left child return null)
@@ -635,16 +687,9 @@ public class AVLTree {
         //sets right child
         public void setRight(AVLNode node) {
             this.rightChild = node;
-            if (node.isRealNode()) {
-            	if (this.getLeft() != null) {
-                	this.setHeight(Math.max(this.getLeft().getHeight(), this.getParent().getHeight()) + 1);
-                } else {
-                	this.setHeight(this.getRight().getHeight() + 1);
-                }
-            }
         	this.rightChild.setParent(this);
             this.setSize(this.leftChild.getSize() + this.rightChild.getSize() + 1);
-            return;
+            this.setXOR(Boolean.logicalXor(this.getXOR(), node.getXOR()));
         }
 
         //returns right child (if there is no right child return null)
@@ -661,6 +706,7 @@ public class AVLTree {
             return;
         }
 
+        
         //returns the parent (if there is no parent return null)
         public AVLNode getParent() {
             return this.parent;
@@ -674,6 +720,8 @@ public class AVLTree {
             return false;
         }
 
+        
+        
         // sets the height of the node
         public void setHeight(int height) {
             this.height = height;
@@ -688,7 +736,10 @@ public class AVLTree {
             return this.height;
         }
         
-        public int getBalance() {
+        
+
+        // getting the balance factor of a node
+        public int BalanceFactor() {
         	if (this.getKey() == -1) {
         		return 0;
         	}
@@ -696,8 +747,7 @@ public class AVLTree {
         }
         
         
-        // getting and setting the 'size' variable
-        
+        // setting and getting the 'size' variable of a node
         public int getSize() {
         	if (this.getKey() == -1) {
         		return 0;
@@ -709,12 +759,44 @@ public class AVLTree {
         	this.size = size;
         }
         
+        
+        
+        // setting and getting the XOR of a node
         public void setXOR(boolean out) {
         	this.XOR = out;
         }
         
         public boolean getXOR() {
         	return this.XOR;
+        }
+        
+        
+        // updating the height of the node based on the heights of its sub-trees + if the height of the node was changed, return true.
+        private boolean updateHeight() {
+        	int tmp = this.getHeight();
+        	this.height = Math.max(this.rightChild.getHeight(), this.leftChild.getHeight()) + 1;
+        	if (tmp != this.getHeight()) {
+        		return true;
+        	} else {
+        		return false;
+        	}
+        }
+        
+        // updating the size of the node based on the sizes of its sub-trees
+        private void updateSize() {
+        	this.size = this.rightChild.size + this.leftChild.size + 1;
+        }
+        
+        // updating the XOR of the node's tree based on the info of the node and the XOR-s of its sub-trees
+        private void updateXOR() {
+        	this.XOR = Boolean.logicalXor(Boolean.logicalXor(this.rightChild.XOR, this.leftChild.XOR), this.info);
+        }
+        
+        // updates the overall info about the node based with the other 'update' functions we implemented + returns true if the height of the node was changed
+        public boolean update_info() {
+        	this.updateSize();
+        	this.updateXOR();
+        	return this.updateHeight();
         }
     }
 
