@@ -166,7 +166,7 @@ public class AVLTree {
     }
 
     public int insert2(int k, boolean i) {
-    	int[] changes = new int[2];
+    	int[] changes = new int[1];
     	this.root = insert_rec(this.getRoot(), new AVLNode(k,i,0), changes);
     	this.printTree(this.getRoot());
     	System.out.println(this.getRoot().BalanceFactor());
@@ -189,6 +189,7 @@ public class AVLTree {
     	
     	int BF = node.BalanceFactor();
     	
+    	// updating (if needed) if the node needs a rotation/height update 
     	if (Math.abs(BF) > 1) {
     		change_info[0]++;
     	} else {
@@ -303,12 +304,11 @@ public class AVLTree {
     	L.setRight(N);
     	N.setLeft(subT2);
     	
-    	
     	// updating the height, size, XOR variables of the nodes based of its sub-trees values
     	N.update_info();
     	L.update_info();
     	
-    	// return the new root 
+    	// return the replacement of the node N (the replacement in the tree-structure)
     	return L;
 
     }
@@ -327,7 +327,7 @@ public class AVLTree {
     	N.update_info();
     	R.update_info();
     	
-    	// return the new root
+    	// return the replacement of the node N (the replacement in the tree-structure)
     	return R;
     }
     
@@ -720,8 +720,6 @@ public class AVLTree {
             return false;
         }
 
-        
-        
         // sets the height of the node
         public void setHeight(int height) {
             this.height = height;
@@ -735,17 +733,6 @@ public class AVLTree {
             }
             return this.height;
         }
-        
-        
-
-        // getting the balance factor of a node
-        public int BalanceFactor() {
-        	if (this.getKey() == -1) {
-        		return 0;
-        	}
-        	return this.leftChild.getHeight() - this.rightChild.getHeight();
-        }
-        
         
         // setting and getting the 'size' variable of a node
         public int getSize() {
@@ -792,11 +779,23 @@ public class AVLTree {
         	this.XOR = Boolean.logicalXor(Boolean.logicalXor(this.rightChild.XOR, this.leftChild.XOR), this.info);
         }
         
+        
+        
         // updates the overall info about the node based with the other 'update' functions we implemented + returns true if the height of the node was changed
         public boolean update_info() {
         	this.updateSize();
         	this.updateXOR();
         	return this.updateHeight();
+        }
+        
+        
+        
+        // getting the balance factor of a node
+        public int BalanceFactor() {
+        	if (this.getKey() == -1) {
+        		return 0;
+        	}
+        	return this.leftChild.getHeight() - this.rightChild.getHeight();
         }
     }
 
