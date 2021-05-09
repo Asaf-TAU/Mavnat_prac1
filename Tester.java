@@ -2,17 +2,19 @@
 public class Tester {
     public static void main(String[] args) {
         AVLTree testTree = new AVLTree();
-        testTree.insert2(9, false);
-        testTree.insert2(1, false);
-        testTree.insert2(2, false);
-        testTree.insert2(8, false);
-        testTree.insert2(6, false);
-        testTree.insert2(7, false);
+        testTree.insert(9, true);
+        testTree.insert(1, false);
+        testTree.insert(2, false);
+        testTree.insert(8, false);
+        testTree.insert(6, true);
+        testTree.insert(7, true);
+        testTree.printTree(testTree.getRoot());
+        
         System.out.println(testTree.getRoot().getXOR());
 //        testTree.printTree(testTree.getRoot());
-//        testTree.insert2(11, false);
+//        testTree.insert(11, false);
 //        testTree.printTree(testTree.getRoot());
-//        testTree.insert2(6, false);
+//        testTree.insert(6, false);
 //        testTree.printTree(testTree.getRoot());
 
     }
