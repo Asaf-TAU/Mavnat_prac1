@@ -204,9 +204,9 @@ public class AVLTree {
     	} else if (BF > 1 && new_node.getKey() > node.getLeft().getKey()) {
     		node.setLeft(leftRotation(node.getLeft()));
     		return rightRotation(node);
-    	} else if (BF < -1 && new_node.getKey() > node.getLeft().getKey()) {
+    	} else if (BF < -1 && new_node.getKey() > node.getRight().getKey()) {
     		return leftRotation(node);
-    	} else if (BF < - 1 && new_node.getKey() < node.getLeft().getKey()) {
+    	} else if (BF < - 1 && new_node.getKey() < node.getRight().getKey()) {
     		node.setRight(rightRotation(node.getRight()));
     		return leftRotation(node);
     	}
