@@ -9,7 +9,6 @@ public class Tester {
         testTree.insert(6, true);
         testTree.insert(7, true);
         testTree.printTree(testTree.getRoot());
-        
 //        testTree.printTree(testTree.getRoot());
 //        testTree.insert(11, false);
 //        testTree.printTree(testTree.getRoot());

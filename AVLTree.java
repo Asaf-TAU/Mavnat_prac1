@@ -123,76 +123,101 @@ public class AVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) { // this is far from being correct 
-    	AVLNode curr = this.root;
-        AVLNode curr_parent = new AVLNode();
-        boolean changed = false;
-        int changes = 0;
-        
-        while (curr.getKey() != -1) { // similar process to the 'search' method, just with the feature of updating the 'direction' variable.
-        	if (curr.getKey() == k) { // if the key was found, replace the node which holds the key, by a virtual node.
-        		curr_parent = curr.getParent();
-        		if (k < curr_parent.getKey()) { // if the removed node was a left child of its parent
-        			curr_parent.setLeft(new AVLNode());
-        			if (curr_parent.getRight() != null ) { 
-        				curr_parent.setHeight(curr_parent.getRight().getHeight() + 1);
-        			} else {
-        				curr_parent.setHeight(0);
-        				changed = true;
-        			}
-        		} else { // if the removed node was a right child of its parent
-        			curr_parent.setRight(new AVLNode());
-        			if (curr_parent.getLeft() != null ) {
-        				curr_parent.setHeight(curr_parent.getLeft().getHeight() + 1);
-        			} else {
-        				curr_parent.setHeight(0);
-        				changed = true;
-        			}
-        		}
-        		break; // the wanted node was deleted, the search can now be done.
-        		
-         	} else { 
-         		if (curr.getKey() > k) {
-         			curr = curr.getRight();
-         		} else {
-         			curr = curr.getLeft();
-         		}
-         	}
-        }
-        
-        if (curr.getKey() == -1) { // base case 
-        	return 0;
-        }
-        
-        int BF = 0;
-        while (curr_parent != null) {
-        	BF = curr_parent.BalanceFactor();
-        	if (Math.abs(BF) < 2 && !changed) {
-        		break;
-        	} else if (Math.abs(BF) < 2) {
-        		curr_parent = curr_parent.getParent();
-        	} else {
-        		changes++;
-        		if (BF > 0) {
-        			if (curr_parent.getLeft().BalanceFactor() >= 0) {
-        				curr_parent.getParent().setLeft(rightRotation(curr_parent));
-        			} else {
-        				curr_parent.getParent().setRight(rightRotation(curr_parent));
-        			}
-        		} else {
-        			if (curr_parent.getKey() < curr_parent.getParent().getKey()) {
-        				curr_parent.getParent().setLeft(leftRotation(curr_parent));
-        			} else {
-        				curr_parent.getParent().setRight(leftRotation(curr_parent));
-        			}
-        		}
-        	}
-        	
-        }
-        
-        return changes;
-        
+    	int[] changes = new int[1];
+    	if (!search(k)) {
+    		return -1;
+    	}
+    	this.root = delete_rec(this.getRoot(), k, changes);
+    	return changes[0];
     }
     
+    public AVLNode delete_rec(AVLNode node, int key, int[] change_info) {
+    	
+    	if (node == null) {
+    		return new AVLNode();
+    	}
+    	
+    	if (node.update_info()) {
+    		change_info[0]++;
+    	}
+    	
+    	if (key < node.getKey()) {
+    		node.setLeft(delete_rec(node.getLeft(), key, change_info));
+    	} else if (key > node.getKey()) {
+    		node.setRight(delete_rec(node.getRight(), key, change_info));
+    	} else {
+    		if (node.getLeft() == null || node.getRight() == null) {
+    			AVLNode tmp;
+    			if (node.getLeft() == null) {
+    				tmp = node.getRight();
+    			} else {
+    				tmp = node.getLeft();
+    			}
+    			if (tmp == null) {
+    				tmp = node;
+    				node = new AVLNode();
+    			} else {
+    				node = tmp;
+    			}
+    		} else {
+    			AVLNode tmp = successor(node);
+    			replace(node, tmp);
+    			node.setRight(delete_rec(node.getRight(), tmp.getKey(), change_info));
+    		}
+    	}
+    	
+    	if (node == null) {
+    		return new AVLNode();
+    	}
+    	
+    	node.update_info();
+    	
+    	int BF = node.BalanceFactor();
+    	
+    	if (BF > 1 && node.getLeft().BalanceFactor() >= 0) {
+    		change_info[0]++;
+    		return rightRotation(node);
+    	} else if (BF > 1 && node.getLeft().BalanceFactor() < 0) {
+    		change_info[0]++;
+    		node.setLeft(leftRotation(node.getLeft()));
+    		node.update_info();
+    		return rightRotation(node);
+    	} else if (BF < -1 && node.getRight().BalanceFactor() <= 0) {
+    		change_info[0]++;
+    		return leftRotation(node);
+    	} else if (BF < -1 && node.getRight().BalanceFactor() > 0) {
+    		change_info[0]++;
+    		node.setRight(rightRotation(node.getRight()));
+    		node.update_info();
+    		return leftRotation(node);
+    	}
+    	return node;
+    }
+    
+    private void replace(AVLNode node, AVLNode tmp) {
+    	AVLNode parent = node.getParent();
+    	tmp.setLeft(node.getLeft());
+    	tmp.setRight(node.getRight());
+    	tmp.setParent(parent != null ? parent : new AVLNode());
+    	tmp.update_info();
+    	
+    	if (parent == null) {
+    		return;
+    	}
+    	
+    	if (parent.getLeft() == node) {
+    		parent.setLeft(tmp);
+    	} else {
+    		parent.setRight(tmp);
+    	}
+    	
+    	if (tmp.getParent().getLeft() == tmp) {
+    		tmp.getParent().setLeft(new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight()));
+    	} else {
+    		tmp.getParent().setRight(new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight()));
+    	}
+    	
+    }
     
     private AVLNode rightRotation(AVLNode N) {
     	AVLNode L = N.getLeft();
