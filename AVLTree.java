@@ -73,13 +73,26 @@ public class AVLTree {
 	 * This always includes the newly-created node.
      * returns -1 if an item with key k already exists in the tree.
      */
-    public int insert(int k, boolean i) {
-    	int[] changes = new int[1];
-    	this.root = insert_rec(this.getRoot(), new AVLNode(k,i,0), changes);
-    	return changes[0];
+    public int insert(int k, boolean i) { // this is a wrapper method to the following 'insert_rec' method which will contain and perform all of the logic behind rotations etc.
+    	if (this.plain_search(k) != null) { // checks if the node is already in the tree. if yes, then return -1.
+    		return -1;
+    	}
+    	int[] changes = new int[1]; // configuring an array to catch up with the amount of changes (i.e. promotions or rotations) that occurred 
+    	this.root = insert_rec(this.getRoot(), new AVLNode(k,i,0), changes); // initializing the recursive function and catching its returned AVLNode, making it the new root of the tree.
+    	return changes[0]; // the value we need to return considering  the given 'contract'
     	
     }
     
+    /**
+     * public AVLNode insert_rec(AVLNode node, AVLNode new_node, int[] change_info)
+     * <p>
+     * NEW METHOD!
+     * this is the recursive function which exists to satisfy the wrapper method 'public int insert(int k, boolean i)' .
+     * inserts an item with key k and info i to the AVL tree.
+     * dynamically updates the amount of promotions or rotations that we performed after the insertion, stored as: change_info[0]
+     * returns the new node which shall be updated as the new root of the tree
+     * this function gets called only
+     */
     public AVLNode insert_rec(AVLNode node, AVLNode new_node, int[] change_info) {
     	if (node == null) {
     		return new_node;
@@ -215,6 +228,12 @@ public class AVLTree {
     	return node;
     }
     
+    /**
+     * NEW METHOD!
+     * @param node
+     * @param tmp
+     * @return
+     */
     private AVLNode replace(AVLNode node, AVLNode tmp) {
     	AVLNode parent = node.parent;
     	AVLNode left = node.leftChild;
@@ -240,6 +259,11 @@ public class AVLTree {
     	return node;
     }
     
+    /**
+     * NEW METHOD!
+     * @param N
+     * @return
+     */
     private AVLNode rightRotation(AVLNode N) {
     	AVLNode L = N.getLeft();
     	AVLNode subT2 = L.getRight() != null ? L.getRight() : new AVLNode();
@@ -258,7 +282,11 @@ public class AVLTree {
 
     }
     
-    
+    /**
+     * NEW METHOD!
+     * @param N
+     * @return
+     */
     private AVLNode leftRotation(AVLNode N) {
     	AVLNode R = N.getRight();
     	AVLNode subT1 = R.getLeft() != null ? R.getLeft() : new AVLNode();
@@ -327,6 +355,13 @@ public class AVLTree {
         return array;
     }
     
+    /**
+     * NEW METHOD!
+     * @param N
+     * @param arr
+     * @param pos
+     * @return
+     */
     private int keysToArray_rec(AVLNode N, int[] arr, int pos) {
     	if (N.getLeft() != null) {
     		pos = keysToArray_rec(N.getLeft(), arr, pos);
@@ -355,6 +390,13 @@ public class AVLTree {
         return array;
     }
 
+    /**
+     * NEW METHOD!
+     * @param N
+     * @param arr
+     * @param pos
+     * @return
+     */
     private int infoToArray_rec(AVLNode N, boolean[] arr, int pos) {
     	if (N.getLeft() != null) {
     		pos = infoToArray_rec(N.getLeft(), arr, pos);
