@@ -202,9 +202,15 @@ public class AVLTree {
     	tmp.update_info();
     	
     	if (parent == null) {
+    		System.out.println(node.getKey());
+    		System.out.println(node.getParent());
+    		return;
+    	} else if (!parent.isRealNode()) {
+    		System.out.println(node.getKey());
+//    		this.root = tmp;
     		return;
     	}
-    	
+
     	if (parent.getLeft() == node) {
     		parent.setLeft(tmp);
     	} else {
@@ -380,6 +386,7 @@ public class AVLTree {
      *
      */
     public boolean prefixXor(int k){
+    	boolean[] out = new boolean[1];
     	AVLNode curr = this.getRoot();
     	while (curr != null) {
     		if (curr.getKey() == k) {
@@ -390,10 +397,41 @@ public class AVLTree {
     			curr = curr.getRight();
     		}
     	}
-    
-    	return curr.getXOR();
+    	
+    	if (curr.getLeft() != null) {
+    		out[0] = curr.getLeft().getXOR();
+    		out[0] = Boolean.logicalXor(out[0], curr.getValue());
+    	} else {
+    		out[0] = curr.getValue();
+    	}
+    	
+    	return prefixXor_rec(curr, out);
     }
     
+    private boolean prefixXor_rec(AVLNode node, boolean[] out) {
+    	if (node == null) {
+    		return out[0];
+    	}
+    	
+    	AVLNode parent = node.getParent();
+    	while (parent != null) {
+    		if (node != parent.getLeft()) {
+    			break;
+    		}
+    		node = parent;
+    		parent = parent.getParent();
+    	}
+    	if (parent != null) {
+    		if (parent.getLeft() != null) {
+    			out[0] = Boolean.logicalXor(out[0], parent.getLeft().getXOR());
+    			out[0] = Boolean.logicalXor(out[0], parent.getValue());
+    		}
+    	}
+
+    	return prefixXor_rec(parent, out);
+    }
+    
+
 //    private boolean prefixXor_rec(b)
     	
     /**
@@ -413,7 +451,10 @@ public class AVLTree {
         	return curr;
         }
         AVLNode parent = node.getParent();
-        while (parent != null && node == parent.getRight()) {
+        while (parent != null) {
+        	if (node != parent.getRight()) {
+        		break;
+        	}
         	node = parent;
         	parent = parent.getParent();
         }
@@ -435,7 +476,10 @@ public class AVLTree {
     	while (curr.getLeft() != null) {
     		curr = curr.getLeft();
     	}
-    	while (curr.getKey() <= k) {
+    	while (curr != null) {
+    		if (curr.getKey() > k) {
+    			break;
+    		}
     		output = Boolean.logicalXor(output, curr.getValue());
     		curr = successor(curr);
     	}
