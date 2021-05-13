@@ -41,7 +41,7 @@ public class AVLTree {
      */
     public Boolean search(int k) {
     	AVLNode out = this.plain_search(k);
-    	if (out === null) {
+    	if (out == null) {
     		return null;
     	} else {
     		return out.getValue();
