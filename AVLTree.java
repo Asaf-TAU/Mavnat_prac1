@@ -40,10 +40,19 @@ public class AVLTree {
      * otherwise, returns null
      */
     public Boolean search(int k) {
+    	AVLNode out = this.plain_search(k);
+    	if (out === null) {
+    		return null;
+    	} else {
+    		return out.getValue();
+    	}
+    }
+
+    private AVLNode plain_search(int k) {
         AVLNode curr = this.getRoot();
         while (curr != null) { // stops when the Node is a null
         	if (curr.getKey() == k) { // if the current Node holds a key which is equal to k, then return the Node's info. 
-        		return curr.info;
+        		return curr;
         	} else {
         		if (curr.getKey() < k) { // if the current Node holds a key which is greater than k, then move on to check the current Node's right child.
         			curr = curr.getRight();
@@ -55,7 +64,6 @@ public class AVLTree {
         
         return null; // return null if the tree was empty or if the key was not found
     }
-
     /**
      * public int insert(int k, boolean i)
      * <p>
@@ -124,7 +132,7 @@ public class AVLTree {
      */
     public int delete(int k) { // this is far from being correct 
     	int[] changes = new int[1];
-    	if (!search(k)) {
+    	if (this.plain_search(k) == null) {
     		return -1;
     	}
     	this.root = delete_rec(this.getRoot(), k, changes);
@@ -135,6 +143,8 @@ public class AVLTree {
     	
     	if (node == null) {
     		return new AVLNode();
+    	} else if (!node.isRealNode()) {
+    		return node;
     	}
     	
     	if (node.update_info()) {
@@ -143,8 +153,10 @@ public class AVLTree {
     	
     	if (key < node.getKey()) {
     		node.setLeft(delete_rec(node.getLeft(), key, change_info));
+    		node.update_info();
     	} else if (key > node.getKey()) {
     		node.setRight(delete_rec(node.getRight(), key, change_info));
+    		node.update_info();
     	} else {
     		if (node.getLeft() == null || node.getRight() == null) {
     			AVLNode tmp;
@@ -154,25 +166,34 @@ public class AVLTree {
     				tmp = node.getLeft();
     			}
     			if (tmp == null) {
-    				tmp = node;
+    				tmp = node; // have a replace statement
     				node = new AVLNode();
     			} else {
-    				node = tmp;
+    				node = replace(node, tmp);
     			}
     		} else {
     			AVLNode tmp = successor(node);
-    			replace(node, tmp);
+    			node = replace(node, tmp);
     			node.setRight(delete_rec(node.getRight(), tmp.getKey(), change_info));
     		}
     	}
     	
-    	if (node == null) {
-    		return new AVLNode();
+    	if (!node.isRealNode()) {
+    		return node;
     	}
     	
     	node.update_info();
     	
     	int BF = node.BalanceFactor();
+    	
+    	if (Math.abs(BF) > 1) {
+    		change_info[0]++;
+    	} else {
+        	if (node.update_info()) {
+        		change_info[0]++;
+        	}
+        	return node;
+    	}
     	
     	if (BF > 1 && node.getLeft().BalanceFactor() >= 0) {
     		change_info[0]++;
@@ -194,21 +215,21 @@ public class AVLTree {
     	return node;
     }
     
-    private void replace(AVLNode node, AVLNode tmp) {
-    	AVLNode parent = node.getParent();
-    	tmp.setLeft(node.getLeft());
-    	tmp.setRight(node.getRight());
-    	tmp.setParent(parent != null ? parent : new AVLNode());
-    	tmp.update_info();
+    private AVLNode replace(AVLNode node, AVLNode tmp) {
+    	AVLNode parent = node.parent;
+    	AVLNode left = node.leftChild;
+    	AVLNode right = node.rightChild;
+    	node = new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight());
+    	node.setLeft(left);
+    	node.setRight(right);
+    	node.setParent(parent);
+    	node.update_info();
     	
     	if (parent == null) {
-    		System.out.println(node.getKey());
-    		System.out.println(node.getParent());
-    		return;
+    		this.root = node;
+    		return node;
     	} else if (!parent.isRealNode()) {
-    		System.out.println(node.getKey());
-//    		this.root = tmp;
-    		return;
+    		return node;
     	}
 
     	if (parent.getLeft() == node) {
@@ -216,13 +237,7 @@ public class AVLTree {
     	} else {
     		parent.setRight(tmp);
     	}
-    	
-    	if (tmp.getParent().getLeft() == tmp) {
-    		tmp.getParent().setLeft(new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight()));
-    	} else {
-    		tmp.getParent().setRight(new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight()));
-    	}
-    	
+    	return node;
     }
     
     private AVLNode rightRotation(AVLNode N) {

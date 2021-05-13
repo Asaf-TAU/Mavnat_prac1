@@ -10,9 +10,8 @@ public class Tester {
         testTree.insert(6, true);
         testTree.insert(7, true);
         testTree.printTree(testTree.getRoot());
-        System.out.println(Arrays.toString(testTree.keysToArray()));
-        System.out.println(Arrays.toString(testTree.infoToArray()));
-        System.out.println(testTree.prefixXor(9));
+        testTree.delete(8);
+        testTree.printTree(testTree.getRoot());
 //        testTree.delete(6);
 //        testTree.printTree(testTree.getRoot());
 //        testTree.printTree(testTree.getRoot());
