@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.*;
+
 
 //\\ read carefully!!! //\\
 /**
@@ -141,6 +143,45 @@ public class AVLTree {
     		node.update_info();
     		return leftRotation(node);
     	}
+    	return node;
+    }
+    
+    
+    public int insert_2(int k, boolean i) { // this is a wrapper method to the following 'insert_rec' method which will contain and perform all of the logic behind rotations etc.
+    	if (this.plain_search(k) != null) { // checks if the node is already in the tree. if yes, then return -1.
+    		return -1;
+    	}
+    	int[] changes = new int[1]; // configuring an array to catch up with the amount of changes (i.e. promotions or rotations) that occurred 
+    	this.root = insert_rec_2(this.getRoot(), new AVLNode(k,i,0), changes); // initializing the recursive function and catching its returned AVLNode, making it the new root of the tree.
+    	return changes[0]; // the value we need to return considering  the given 'contract'
+    	
+    }
+    
+    /**
+     * public AVLNode insert_rec(AVLNode node, AVLNode new_node, int[] change_info)
+     * <p>
+     * NEW METHOD!
+     * this is the recursive function which exists to satisfy the wrapper method 'public int insert(int k, boolean i)' .
+     * inserts an item with key k and info i to the AVL tree.
+     * dynamically updates the amount of promotions or rotations that we performed after the insertion, stored as: change_info[0]
+     * returns the new node which shall be updated as the new root of the tree
+     * this function gets called only
+     */
+    public AVLNode insert_rec_2(AVLNode node, AVLNode new_node, int[] change_info) {
+    	if (node == null) {
+    		return new_node;
+    	}
+    	
+    	if (new_node.getKey() < node.getKey()) {
+    		node.setLeft(insert_rec(node.getLeft(), new_node, change_info));
+    	} else if (new_node.getKey() > node.getKey()){
+    		node.setRight(insert_rec(node.getRight(), new_node, change_info));
+    	} else {
+    		return node;
+    	}
+    	
+    	node.update_info();
+    	
     	return node;
     }
     
@@ -453,53 +494,29 @@ public class AVLTree {
      *
      */
     public boolean prefixXor(int k){
-    	boolean[] out = new boolean[1];
+    	boolean out = false;
     	AVLNode curr = this.getRoot();
     	while (curr != null) {
     		if (curr.getKey() == k) {
+    			out = Boolean.logicalXor(out, curr.getValue());
+    			if (curr.getLeft() != null) {
+        			out = Boolean.logicalXor(out, curr.getLeft().getXOR());
+    			}
     			break;
     		} else if (k < curr.getKey()) {
     			curr = curr.getLeft();
     		} else {
+    			out = Boolean.logicalXor(out, curr.getValue());
+    			if (curr.getLeft() != null) {
+        			out = Boolean.logicalXor(out, curr.getLeft().getXOR());
+    			}
     			curr = curr.getRight();
     		}
     	}
     	
-    	if (curr.getLeft() != null) {
-    		out[0] = curr.getLeft().getXOR();
-    		out[0] = Boolean.logicalXor(out[0], curr.getValue());
-    	} else {
-    		out[0] = curr.getValue();
-    	}
-    	
-    	return prefixXor_rec(curr, out);
+    	return out;
     }
     
-    private boolean prefixXor_rec(AVLNode node, boolean[] out) {
-    	if (node == null) {
-    		return out[0];
-    	}
-    	
-    	AVLNode parent = node.getParent();
-    	while (parent != null) {
-    		if (node != parent.getLeft()) {
-    			break;
-    		}
-    		node = parent;
-    		parent = parent.getParent();
-    	}
-    	if (parent != null) {
-    		if (parent.getLeft() != null) {
-    			out[0] = Boolean.logicalXor(out[0], parent.getLeft().getXOR());
-    			out[0] = Boolean.logicalXor(out[0], parent.getValue());
-    		}
-    	}
-
-    	return prefixXor_rec(parent, out);
-    }
-    
-
-//    private boolean prefixXor_rec(b)
     	
     /**
      * public AVLNode successor
