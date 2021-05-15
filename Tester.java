@@ -1,27 +1,57 @@
-import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Tester {
-    public static void main(String[] args) {
-        AVLTree testTree = new AVLTree();
-        testTree.insert(9, true);
-        testTree.insert(1, true);
-        testTree.insert(2, false);
-        testTree.insert(8, false);
-        testTree.insert(6, true);
-        testTree.insert(7, true);
-        testTree.printTree(testTree.getRoot());
-        testTree.delete(8);
-        testTree.printTree(testTree.getRoot());
-//        testTree.delete(6);
-//        testTree.printTree(testTree.getRoot());
-//        testTree.printTree(testTree.getRoot());
-//        testTree.insert(11, false);
-//        testTree.printTree(testTree.getRoot());
-//        testTree.insert(6, false);
-//        testTree.printTree(testTree.getRoot());
+    public static void main(String[] args) throws InterruptedException {
+    	Random ran = new Random();
+    	
+    	for (int i=5; i>0; i--) { // iterating between 1...5
+            AVLTree testTree = new AVLTree();     
+            System.out.printf("this iteration is focusing on: %d !%n", i);
+            
+            // do the insertions here:
+            for (int j = 0; j<500*i; j++) { 
+                int insertKey = ran.nextInt(1000000);
+                testTree.insert(insertKey, ran.nextBoolean());
+            }
+            // insertion process done
+            
+            long sum = 0;
+            int hundred = 100;
+        	long diff = 0;
+        	long startTime = 0;
+        	long endTime = 0;
+        	
+            int[] keys = testTree.keysToArray();
+            
+            for (int key : keys) {
+            	if (hundred == 0) {
+            		System.out.println("average of first one hundred insertions is (in nanoseconds): " + (sum/(100)));
+            	}
+            	
+            	startTime = System.nanoTime();
+            	
+            	// Xor operations
+            	
+            	testTree.prefixXor(key);
 
+
+            	// end of Xor operations
+            	
+                endTime = System.nanoTime();
+                diff = endTime - startTime;
+                sum += diff;
+        //\\ update of hundred //\\
+                hundred--; 
+            }
+            
+            double average = sum/(500*i);
+            System.out.println("average of all of the process (in nanoseconds): " + average);
+            System.out.printf("%n");
+            
+    	}
     }
-
+        
     public static void print_node(AVLTree.AVLNode node) {
         System.out.println("size: " + node.getSize());
         System.out.println("height: " + node.getHeight());
