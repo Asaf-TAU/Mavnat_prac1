@@ -1,6 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
 
+//\\ read carefully!!! //\\
+/**
+ * contributors' info and details:
+ * @adam:
+ * TAU-username: adamtuby
+ * id: 215334822
+ * @asaf:
+ * TAU-username: 
+ * id: 
+ */
 
 /**
  * public class AVLNode
