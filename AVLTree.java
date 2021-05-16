@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.*;
 
 
 //\\ read carefully!!! //\\
@@ -28,7 +27,7 @@ import java.lang.*;
  */
 
 public class AVLTree {
-	public final AVLNode virtual;
+	private final AVLNode virtual;
 	
     public AVLNode root;
     /**
