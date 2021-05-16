@@ -3,11 +3,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Tester {
     public static void main(String[] args) throws InterruptedException {
-    		measurements_2();
+//    		measurements_2_plain();
+    	AVLTree testTree = new AVLTree();
+    	insertOrder(testTree, 1, 10);
+    	System.out.println("done");
     	}
-
     
-    public static void measurements_2() throws InterruptedException {
+    public static void measurements_2_plain() throws InterruptedException {
     	Random ran = new Random();
     	
     	for (int i=1; i<6; i++) { // iterating between 1...5
@@ -53,6 +55,24 @@ public class Tester {
             System.out.printf("%n");
     	}
     }
+    
+    public static void insertOrder(AVLTree testTree, int start, int end) {
+    	if (end < start) {
+    		return;
+    	} else if (end == start) {
+    		testTree.insert_2(end, false);
+    		return;
+    	}
+    	int mid = Math.floorDiv((start+end), 2);
+    	if (mid == 0) {
+    		return;
+    	}
+    	testTree.insert_2(mid, false);
+    	insertOrder(testTree, 0, mid);
+    	insertOrder(testTree, mid+1, end);
+    }
+    
+    
     
     public static void measurements_XOR() throws InterruptedException {
     	Random ran = new Random();
