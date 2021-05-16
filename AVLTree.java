@@ -4,6 +4,7 @@ import java.lang.*;
 
 
 //\\ read carefully!!! //\\
+//\\ this is dedicated to both this assignment's Testers, and to the contributing students to go over and make sure the details below are correct !!! //\\
 /**
  * contributors' info and details:
  * @adam:
@@ -27,13 +28,15 @@ import java.lang.*;
  */
 
 public class AVLTree {
-
+	public final AVLNode virtual;
+	
     public AVLNode root;
     /**
      * This constructor creates an empty AVLTree.
      */
     public AVLTree(){
-        this.root = new AVLNode();
+    	virtual = new AVLNode(); 
+        this.root = virtual; 
     }
 
     /**
@@ -60,7 +63,7 @@ public class AVLTree {
     	}
     }
 
-    private AVLNode plain_search(int k) {
+    public AVLNode plain_search(int k) { // change back to private
         AVLNode curr = this.getRoot();
         while (curr != null) { // stops when the Node is a null
         	if (curr.getKey() == k) { // if the current Node holds a key which is equal to k, then return the Node's info. 
@@ -206,7 +209,7 @@ public class AVLTree {
     public AVLNode delete_rec(AVLNode node, int key, int[] change_info) {
     	
     	if (node == null) {
-    		return new AVLNode();
+    		return virtual; 
     	} else if (!node.isRealNode()) {
     		return node;
     	}
@@ -231,7 +234,7 @@ public class AVLTree {
     			}
     			if (tmp == null) {
     				tmp = node; // have a replace statement
-    				node = new AVLNode();
+    				node = virtual; 
     			} else {
     				node = replace(node, tmp);
     			}
@@ -317,7 +320,7 @@ public class AVLTree {
      */
     private AVLNode rightRotation(AVLNode N) {
     	AVLNode L = N.getLeft();
-    	AVLNode subT2 = L.getRight() != null ? L.getRight() : new AVLNode();
+    	AVLNode subT2 = L.getRight() != null ? L.getRight() : virtual; 
     	
     	// rotating sub-trees and nodes
     	L.setParent(N.getParent());
@@ -340,7 +343,7 @@ public class AVLTree {
      */
     private AVLNode leftRotation(AVLNode N) {
     	AVLNode R = N.getRight();
-    	AVLNode subT1 = R.getLeft() != null ? R.getLeft() : new AVLNode();
+    	AVLNode subT1 = R.getLeft() != null ? R.getLeft() : virtual; 
     	
     	// rotating sub-trees and nodes
     	R.setParent(N.getParent());
@@ -702,8 +705,8 @@ public class AVLTree {
             this.key = key;
             this.info = info;
             this.height = height;
-            this.rightChild = new AVLNode();
-            this.leftChild = new AVLNode();
+            this.rightChild = virtual; 
+            this.leftChild = virtual; 
             this.size = 1;
             this.XOR = info;
         }
