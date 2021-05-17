@@ -316,9 +316,6 @@ public class AVLTree {
     		return node;
     	}
 
-    	if (parent.getLeft().getKey() != key && parent.getRight().getKey() != key) { // delete this 
-    		System.out.println("not good");
-    	}
     	if (parent.getLeft().getKey() == key) {
     		parent.setLeft(node);
     	} else {

@@ -13,15 +13,6 @@ public class Tester {
 	public static long diff_2 = 0;
 	
     public static void main(String[] args) throws InterruptedException {
-    	AVLTree testTree = new AVLTree();
-    	for (int i=1; i<9; i++) {
-    		testTree.insert(i, false);
-    	}
-    	testTree.printTree(testTree.getRoot());
-    	for (int i=1; i<8; i++) {
-    		testTree.delete(i);
-    		testTree.printTree(testTree.getRoot());
-    	}
     	
     }
 
