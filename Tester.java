@@ -1,18 +1,104 @@
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
 
 public class Tester {
+	public static int ind = 0;
+    public static long startTime_1 = 0;
+	public static long endTime_1 = 0;
+	public static long sum_1 = 0;
+	public static long diff_1 = 0;
+	public static long startTime_2 = 0;
+	public static long endTime_2 = 0;
+	public static long sum_2 = 0;
+	public static long diff_2 = 0;
+	
     public static void main(String[] args) throws InterruptedException {
-    	general_test();
+        startTime_1 = 0;
+    	endTime_1 = 0;
+    	sum_1 = 0;
+    	diff_1 = 0;
+        startTime_2 = 0;
+    	endTime_2 = 0;
+    	sum_2 = 0;
+    	diff_2 = 0;
+    	
+    	measurements_ordered();
     }
+
     
-    public static void measurements_ordered(int amount) throws InterruptedException {
-//    	int loops = (int)Math.l;
-//    	System.out.println(loops);
+    
+    public static void measurements_ordered() throws InterruptedException {
+    	AVLTree testTree;
+    	for (int i=10; i>0; i--) {
+    		sum_1 = 0;
+    		sum_2 = 0;
+    		ind = 0;
+    		testTree = treeFromArr(generate_arr(1, 1000*i, new int[1000*i]));
+    		ind = 0;
+    		testTree = treeFromArr_2(generate_arr(1, 1000*i, new int[1000*i]));
+    		System.out.println(testTree.keysToArray().length);
+    		System.out.println("the average duration of execution of an insertion in an AVL Tree is, on average, for i="+i+" (in nanoseconds): " + sum_1/(1000*i));
+    		System.out.println("the average duration of execution of an insertion in an regular BST  is, on average, for i="+i+" (in nanoseconds): " + sum_2/(1000*i));
+    	}
+    	
     	return;
     }
     
+    public static int[] generate_arr(int start, int end, int[] arr) {
+    	if (end < start) {
+    		return null;
+    	}
+    	int mid = Math.floorDiv((start+end), 2);
+    	arr[ind++] = mid;
+    	generate_arr(start, mid-1, arr);
+    	generate_arr(mid+1, end, arr);
+    	if (start == 1 && end == arr.length) {
+    		return arr;
+    	}
+    	return null;
+    }
+    
+    public static AVLTree treeFromArr(int[] arr) {
+    	AVLTree testTree = new AVLTree();
+    	for (int key : arr) {
+    		// measure execution time
+    		startTime_1 = System.nanoTime();
+    		testTree.insert(key, false);
+    		endTime_1 = System.nanoTime();
+    		
+    		// analyze
+    		diff_1 = endTime_1 - startTime_1;
+    		sum_1 += diff_1;
+    		
+    		// reset times
+            startTime_1 = 0;
+        	endTime_1 = 0;
+        	diff_1 = 0;
+    	}
+    	return testTree;
+    }
+    
+    public static AVLTree treeFromArr_2(int[] arr) {
+    	AVLTree testTree = new AVLTree();
+    	for (int key : arr) {
+    		// measure execution time
+    		startTime_2 = System.nanoTime();
+    		testTree.insert_2(key, false);
+    		endTime_2 = System.nanoTime();
+    		
+    		// analyze
+    		diff_2 = endTime_2 - startTime_2;
+    		sum_2 += diff_2;
+    		
+    		// reset times
+            startTime_2 = 0;
+        	endTime_2 = 0;
+        	diff_2 = 0;
+    		
+    	}
+    	return testTree;
+    }
+
     public static void measurements_2_plain() throws InterruptedException {
     	Random ran = new Random();
     	
@@ -20,14 +106,14 @@ public class Tester {
             AVLTree testTree_1 = new AVLTree();    
             AVLTree testTree_2 = new AVLTree();
             
-            long startTime_1 = 0;
-        	long endTime_1 = 0;
-        	long sum_1 = 0;
-        	long diff_1 = 0;
-            long startTime_2 = 0;
-        	long endTime_2 = 0;
-        	long sum_2 = 0;
-        	long diff_2 = 0;
+            startTime_1 = 0;
+        	endTime_1 = 0;
+        	sum_1 = 0;
+        	diff_1 = 0;
+            startTime_2 = 0;
+        	endTime_2 = 0;
+        	sum_2 = 0;
+        	diff_2 = 0;
         	int insertKey;
             System.out.printf("this iteration is focusing on: i=%d !%n", i);
             
@@ -60,9 +146,9 @@ public class Tester {
     	}
     }   
     
-    
+   
     public static void measurements_XOR() throws InterruptedException {
-    	Random ran = new Random();
+    	Random ran = new Random(); // no actual need
     	
     	for (int i=10; i>0; i--) { // iterating between 1...5
             AVLTree testTree = new AVLTree();     
