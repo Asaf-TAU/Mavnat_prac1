@@ -22,7 +22,7 @@ public class Tester {
     	sum_2 = 0;
     	diff_2 = 0;
     	
-    	measurements_ordered();
+    	measurements_XOR();
     }
 
     
@@ -114,12 +114,16 @@ public class Tester {
         	endTime_2 = 0;
         	sum_2 = 0;
         	diff_2 = 0;
-        	int insertKey;
+        	int insertKey = 0;
             System.out.printf("this iteration is focusing on: i=%d !%n", i);
             
             // do the insertions here:
             for (int j=1; j<1000*i; j++) { 
-            	insertKey = ran.nextInt(1000000);
+            	while (testTree_1.plain_search(insertKey) != null) {
+            		insertKey = ran.nextInt(1000*i - 1);
+            		insertKey++;
+            	}
+
             	// measure the following operations:
             	startTime_1 = System.nanoTime();
             	testTree_1.insert(insertKey, false);
@@ -156,42 +160,52 @@ public class Tester {
             
             // do the insertions here:
             for (int j = 0; j<500*i; j++) { 
-                int insertKey = j+1;
-                testTree.insert(insertKey, false);
+                int insertKey = ran.nextInt(1000000);
+                testTree.insert(insertKey, ran.nextBoolean());
             }
             // insertion process done
             
-            long sum = 0;
             int hundred = 100;
-        	long diff = 0;
-        	long startTime = 0;
-        	long endTime = 0;
+            startTime_1 = 0;
+        	endTime_1 = 0;
+        	sum_1 = 0;
+        	diff_1 = 0;
+            startTime_2 = 0;
+        	endTime_2 = 0;
+        	sum_2 = 0;
+        	diff_2 = 0;
         	
             int[] keys = testTree.keysToArray();
             
             for (int key : keys) {
             	if (hundred == 0) {
-            		System.out.println("average of first one hundred insertions is (in nanoseconds): " + (sum/(100)));
+            		System.out.println("average of first one hundred insertions is (in nanoseconds) for prefixXor: " + (sum_1/(100)));
+            		System.out.println("average of first one hundred insertions is (in nanoseconds) for succPrefixXor: " + (sum_2/(100)));
             	}
             	
-            	startTime = System.nanoTime();
-            	
+            	startTime_1 = System.nanoTime();
             	// Xor operations
-            	
-            	testTree.prefixXor(key); // succPrefixXor(key)/prefixXor(key)
-
-
+            	testTree.prefixXor(key); 
             	// end of Xor operations
-            	
-                endTime = System.nanoTime();
-                diff = endTime - startTime;
-                sum += diff;
+                endTime_1 = System.nanoTime();
+                
+            	startTime_2 = System.nanoTime();
+            	// Xor operations
+            	testTree.succPrefixXor(key); 
+            	// end of Xor operations
+                endTime_2 = System.nanoTime();
+                
+                
+                diff_1 = endTime_1 - startTime_1;
+                sum_1 += diff_1;
+                diff_2 = endTime_2 - startTime_2;
+                sum_2 += diff_2;
         //\\ update of hundred //\\
                 hundred--; 
             }
-            
-            double average = sum/(500*i);
-            System.out.println("average of all of the process (in nanoseconds): " + average);
+
+            System.out.println("average of all of the process (in nanoseconds) for prefixXor: " + sum_1/(500*i));
+            System.out.println("average of all of the process (in nanoseconds) for succPrefixXor: " + sum_2/(500*i));
             System.out.printf("%n");
     	}
     }
