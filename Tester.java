@@ -13,16 +13,16 @@ public class Tester {
 	public static long diff_2 = 0;
 	
     public static void main(String[] args) throws InterruptedException {
-        startTime_1 = 0;
-    	endTime_1 = 0;
-    	sum_1 = 0;
-    	diff_1 = 0;
-        startTime_2 = 0;
-    	endTime_2 = 0;
-    	sum_2 = 0;
-    	diff_2 = 0;
+    	AVLTree testTree = new AVLTree();
+    	for (int i=1; i<9; i++) {
+    		testTree.insert(i, false);
+    	}
+    	testTree.printTree(testTree.getRoot());
+    	for (int i=1; i<8; i++) {
+    		testTree.delete(i);
+    		testTree.printTree(testTree.getRoot());
+    	}
     	
-    	measurements_XOR();
     }
 
     

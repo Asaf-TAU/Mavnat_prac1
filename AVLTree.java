@@ -196,7 +196,7 @@ public class AVLTree {
      * returns the number of nodes which required rebalancing operations (i.e. demotions or rotations).
      * returns -1 if an item with key k was not found in the tree.
      */
-    public int delete(int k) { // this is far from being correct 
+    public int delete(int k) {
     	int[] changes = new int[1];
     	if (this.plain_search(k) == null) {
     		return -1;
@@ -232,10 +232,20 @@ public class AVLTree {
     				tmp = node.getLeft();
     			}
     			if (tmp == null) {
-    				tmp = node; // have a replace statement
     				node = virtual; 
     			} else {
-    				node = replace(node, tmp);
+    				AVLNode parent = node.parent;
+					node = new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight());
+					node.setParent(parent);
+					if (parent != null) {
+						if (parent.isRealNode()) {
+							if (parent.getKey() > node.getKey()) {
+								parent.setLeft(node);
+							} else {
+								parent.setRight(node);
+							}
+						}
+					}
     			}
     		} else {
     			AVLNode tmp = successor(node);
@@ -291,6 +301,8 @@ public class AVLTree {
     	AVLNode parent = node.parent;
     	AVLNode left = node.leftChild;
     	AVLNode right = node.rightChild;
+    	int key = node.getKey();
+    	
     	node = new AVLNode(tmp.getKey(), tmp.getValue(), tmp.getHeight());
     	node.setLeft(left);
     	node.setRight(right);
@@ -304,10 +316,13 @@ public class AVLTree {
     		return node;
     	}
 
-    	if (parent.getLeft() == node) {
-    		parent.setLeft(tmp);
+    	if (parent.getLeft().getKey() != key && parent.getRight().getKey() != key) { // delete this 
+    		System.out.println("not good");
+    	}
+    	if (parent.getLeft().getKey() == key) {
+    		parent.setLeft(node);
     	} else {
-    		parent.setRight(tmp);
+    		parent.setRight(node);
     	}
     	return node;
     }
