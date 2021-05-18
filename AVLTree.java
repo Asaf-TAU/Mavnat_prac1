@@ -62,7 +62,7 @@ public class AVLTree {
     	}
     }
 
-    public AVLNode plain_search(int k) { // change back to private
+    private AVLNode plain_search(int k) { // change back to private
         AVLNode curr = this.getRoot();
         while (curr != null) { // stops when the Node is a null
         	if (curr.getKey() == k) { // if the current Node holds a key which is equal to k, then return the Node's info. 
@@ -415,27 +415,12 @@ public class AVLTree {
     		return new int[] {};
     	}
         int[] array = new int[this.size()];
-        AVLNode curr = this.getRoot();
-        keysToArray_rec(curr, array, 0);
+        AVLNode[] arr = new AVLNode[this.size()];
+        nodesToArray(this.getRoot(), arr, 0);
+        for (int i=0; i<array.length; i++) {
+        	array[i] = arr[i].getKey();
+        }
         return array;
-    }
-    
-    /**
-     * NEW METHOD!
-     * @param N
-     * @param arr
-     * @param pos
-     * @return
-     */
-    private int keysToArray_rec(AVLNode N, int[] arr, int pos) {
-    	if (N.getLeft() != null) {
-    		pos = keysToArray_rec(N.getLeft(), arr, pos);
-    	}
-    	arr[pos++] = N.getKey();
-    	if (N.getRight() != null) {
-    		pos = keysToArray_rec(N.getRight(), arr, pos);
-    	}
-    	return pos;
     }
 
     /**
@@ -450,8 +435,11 @@ public class AVLTree {
     		return new boolean[] {};
     	}
         boolean[] array = new boolean[this.size()];
-        AVLNode curr = this.getRoot();
-        infoToArray_rec(curr, array, 0);
+        AVLNode[] arr = new AVLNode[this.size()];
+        nodesToArray(this.getRoot(), arr, 0);
+        for (int i=0; i<array.length; i++) {
+        	array[i] = arr[i].getValue();
+        }
         return array;
     }
 
@@ -462,17 +450,16 @@ public class AVLTree {
      * @param pos
      * @return
      */
-    private int infoToArray_rec(AVLNode N, boolean[] arr, int pos) {
+    private int nodesToArray(AVLNode N, AVLNode[] arr, int pos) {
     	if (N.getLeft() != null) {
-    		pos = infoToArray_rec(N.getLeft(), arr, pos);
+    		pos = nodesToArray(N.getLeft(), arr, pos);
     	}
-    	arr[pos++] = N.getValue();
+    	arr[pos++] = N;
     	if (N.getRight() != null) {
-    		pos = infoToArray_rec(N.getRight(), arr, pos);
+    		pos = nodesToArray(N.getRight(), arr ,pos);
     	}
     	return pos;
     }
-    
     
     /**
      * public int size()
@@ -705,7 +692,7 @@ public class AVLTree {
         private AVLNode rightChild;
         private AVLNode parent;
         private int size;
-        private boolean XOR = false ; // tracks the XOR of all of the nodes in the tree whose root is this AVLNode
+        private boolean XOR = false; // tracks the XOR of all of the nodes in the tree whose root is this AVLNode
         
         public AVLNode() {  // virtual node
             this.key = -1;

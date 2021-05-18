@@ -13,7 +13,7 @@ public class Tester {
 	public static long diff_2 = 0;
 	
     public static void main(String[] args) throws InterruptedException {
-    	
+    	general_test();
     }
 
     
@@ -110,7 +110,7 @@ public class Tester {
             
             // do the insertions here:
             for (int j=1; j<1000*i; j++) { 
-            	while (testTree_1.plain_search(insertKey) != null) {
+            	while (testTree_1.search(insertKey) != null) {
             		insertKey = ran.nextInt(1000*i - 1);
             		insertKey++;
             	}
