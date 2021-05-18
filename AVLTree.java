@@ -27,15 +27,15 @@ import java.util.List;
  */
 
 public class AVLTree {
-	private final AVLNode virtual;
+	private final AVLNode virtual; // every tree will hold this field to be its virtual node, in order to save up memory by using the same virtual node whenever we need to use one.
 	
-    public AVLNode root;
+    public AVLNode root; // the root of the tree
     /**
      * This constructor creates an empty AVLTree.
      */
     public AVLTree(){
-    	virtual = new AVLNode(); 
-        this.root = virtual; 
+    	virtual = new AVLNode(); // configuring the virtual node 
+        this.root = virtual; // initialize the root to be a virtual node
     }
 
     /**
@@ -43,7 +43,7 @@ public class AVLTree {
      * <p>
      * returns true if and only if the tree is empty
      */
-    public boolean empty() {
+    public boolean empty() { // just check if the root is a virtual node or not
         return !this.root.isRealNode();
     }
 
@@ -53,15 +53,20 @@ public class AVLTree {
      * returns the info of an item with key k if it exists in the tree
      * otherwise, returns null
      */
-    public Boolean search(int k) {
-    	AVLNode out = this.plain_search(k);
-    	if (out == null) {
+    public Boolean search(int k) { 
+    	AVLNode out = this.plain_search(k); // catching the returned node from the method plain_search(k)
+    	if (out == null) { // if out is null, then k wasn't even in the tree
     		return null;
     	} else {
     		return out.getValue();
     	}
     }
 
+    /**
+     * NEW METHOD!
+     * this method's role is to return the node in the tree whose key is the @k. 
+     * if there is no node like that, we return null.
+     */
     private AVLNode plain_search(int k) { // change back to private
         AVLNode curr = this.getRoot();
         while (curr != null) { // stops when the Node is a null
@@ -78,6 +83,7 @@ public class AVLTree {
         
         return null; // return null if the tree was empty or if the key was not found
     }
+    
     /**
      * public int insert(int k, boolean i)
      * <p>
@@ -105,16 +111,23 @@ public class AVLTree {
      * inserts an item with key k and info i to the AVL tree.
      * dynamically updates the amount of promotions or rotations that we performed after the insertion, stored as: change_info[0]
      * returns the new node which shall be updated as the new root of the tree
-     * this function gets called only
+     * this function gets called only when the the node that we want to insret's key is not within the tree
+     * the process occurs as follows:
+     * we insert the key to the tree whose root is @node. then:
+     * if abs(node.BalanceFactor) > 1 @implies we higher @change_info[0] by one, and continue to the rotations' process. after the rotations are done, we then update @node 's info by the update_info() method.
+     * else: we update @node 's info by the update_info() method. if update_info() returned true, that means the the node's height was changed, then we higher @change_info[0] by one.
+     * then we return @node
+     * the recursive part of this method is done within the insertion process, which iterates the variable @node through all of the nodes we visited in order to insert @new_node
      */
-    public AVLNode insert_rec(AVLNode node, AVLNode new_node, int[] change_info) {
-    	if (node == null) {
+    public AVLNode insert_rec(AVLNode node, AVLNode new_node, int[] change_info) { // I'm here \\
+    	if (node == null) { // if we reached the part where @node is null, that means that we reached the exact place that @new_node needs to be inserted in. thus we return new_node.
+    		change_info[0]++;
     		return new_node;
     	}
     	
-    	if (new_node.getKey() < node.getKey()) {
-    		node.setLeft(insert_rec(node.getLeft(), new_node, change_info));
-    	} else if (new_node.getKey() > node.getKey()){
+    	if (new_node.getKey() < node.getKey()) { // if the node which needs to be inserted shall be in the left sub-tree of node
+    		node.setLeft(insert_rec(node.getLeft(), new_node, change_info)); // insert new_node in the tree whose root is node.getLeft()
+    	} else if (new_node.getKey() > node.getKey()){ // if the node which needs to be inserted shall be in the right sub-tree of node
     		node.setRight(insert_rec(node.getRight(), new_node, change_info));
     	} else {
     		return node;
@@ -250,7 +263,7 @@ public class AVLTree {
     		} else {
     			AVLNode tmp = successor(node);
     			node = replace(node, tmp);
-    			node.setRight(delete_rec(node.getRight(), tmp.getKey(), change_info));
+    			node.setRight(delete_rec(node.getRight(), tmp.getKey(), new int[1]));
     		}
     	}
     	
@@ -272,18 +285,14 @@ public class AVLTree {
     	}
     	
     	if (BF > 1 && node.getLeft().BalanceFactor() >= 0) {
-    		change_info[0]++;
     		return rightRotation(node);
     	} else if (BF > 1 && node.getLeft().BalanceFactor() < 0) {
-    		change_info[0]++;
     		node.setLeft(leftRotation(node.getLeft()));
     		node.update_info();
     		return rightRotation(node);
     	} else if (BF < -1 && node.getRight().BalanceFactor() <= 0) {
-    		change_info[0]++;
     		return leftRotation(node);
     	} else if (BF < -1 && node.getRight().BalanceFactor() > 0) {
-    		change_info[0]++;
     		node.setRight(rightRotation(node.getRight()));
     		node.update_info();
     		return leftRotation(node);
