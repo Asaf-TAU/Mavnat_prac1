@@ -434,15 +434,25 @@ public class AVLTree {
      * Returns a sorted array which contains all keys in the tree,
      * or an empty array if the tree is empty.
      * <p>
+     * this is a wrapper method to the recursive method nodesToArray
+     * <p>
      * Complexity: O(n)
      */
     public int[] keysToArray() {
-    	if (this.empty()) {
+    	if (this.empty()) { // if the tree is empty return an empty array
     		return new int[] {};
     	}
-        int[] array = new int[this.size()];
-        AVLNode[] arr = new AVLNode[this.size()];
+    	
+    	// initialize an array the size of the tree
+        int[] array = new int[this.size()]; 
+        
+        // initialize an array to be sent out to get filled with the nodes of the tree in an in-ordered way with the recursive method nodesToArray
+        AVLNode[] arr = new AVLNode[this.size()]; 
+        
+        // call nodesToArray to get the nodes of the tree in an in-ordered array
         nodesToArray(this.getRoot(), arr, 0);
+        
+        // iterate through the in-ordered array of nodes and extract the wanted info
         for (int i=0; i<array.length; i++) {
         	array[i] = arr[i].getKey();
         }
@@ -456,15 +466,25 @@ public class AVLTree {
      * sorted by their respective keys,
      * or an empty array if the tree is empty.
      * <p>
+     * this is a wrapper method to the recursive method nodesToArray
+     * <p>
      * Complexity: O(n)
      */
     public boolean[] infoToArray() {
-    	if (this.empty()) {
+    	if (this.empty()) { // if the tree is empty return an empty array
     		return new boolean[] {};
     	}
+    	
+    	// initialize an array the size of the tree
         boolean[] array = new boolean[this.size()];
+        
+        // initialize an array to be sent out to get filled with the nodes of the tree in an in-ordered way with the recursive method nodesToArray
         AVLNode[] arr = new AVLNode[this.size()];
+        
+        // call nodesToArray to get the nodes of the tree in an in-ordered array
         nodesToArray(this.getRoot(), arr, 0);
+        
+        // iterate through the in-ordered array of nodes and extract the wanted info
         for (int i=0; i<array.length; i++) {
         	array[i] = arr[i].getValue();
         }
@@ -473,19 +493,33 @@ public class AVLTree {
 
     /**
      * NEW SUPPLEMENTARY METHOD!
+     * this method's role is to return an array of all of the nodes in the tree, ordered by their keys.
+     * it does it in a recursive way.
+     * it basically does an in-order process of all of the tree.
+     * <p>
+     * this method's existence is mainly to fulfill keyToArray, and infoToArray's needs. they will be the wrapper methods.
      * <p>
      * Complexity: O(n)
      */
     private int nodesToArray(AVLNode N, AVLNode[] arr, int pos) {
-    	if (N.getLeft() != null) {
+    	// first, assign the left sub-tree in an in-ordered way to the array 
+    	if (N.getLeft() != null) { 
     		pos = nodesToArray(N.getLeft(), arr, pos);
     	}
-    	arr[pos++] = N;
-    	if (N.getRight() != null) {
+
+    	// assign the node to the array after the left sub-tree was assigned in an in-orderd way
+    	arr[pos++] = N; 
+    	
+    	// last, assign the right sub-tree in an in-ordered way to the rest of the array, after both the node N and its left sub-tree were assigned in an in-ordered way to the array
+    	if (N.getRight() != null) { 
     		pos = nodesToArray(N.getRight(), arr ,pos);
     	}
-    	return pos;
+    	
+    	// return the amount of occupied space in the array
+    	return pos; 
     }
+    
+    
     
     /**
      * public int size()
@@ -497,6 +531,8 @@ public class AVLTree {
     public int size() {
         return this.root.getSize();
     }
+    
+    
 
     /**
      * public int getRoot()
@@ -506,10 +542,10 @@ public class AVLTree {
      * Complexity: O(1)
      */
     public AVLNode getRoot() {
-    	if (this.root.getKey() == -1) {
+    	if (this.root.getKey() == -1) { // if the root is a virtual node 
     		return null;
     	}
-        if (this.empty()) {
+        if (this.empty()) { // if the tree is empty 
             return null;
         }
         return this.root;
@@ -524,60 +560,74 @@ public class AVLTree {
      * precondition: this.search(k) != null
      *
      * <p>
+     * the way we are going to implement this method in a logarithmic run-time complexity, is as follows:
+     * we are going to perform a search process of the key k in the tree. every node @curr we visit in the search process, that holds a key smaller than k, we are going to:
+     * perform a XOR operation between out, curr's info (the boolean value it holds), and the XOR value of curr's left child (if there is one).
+     * <p>
      * Complexity: O(log n)
      */
     public boolean prefixXor(int k){
+    	// initialize the variable that we are going to return 
     	boolean out = false;
+    	
+    	// perform a search process
     	AVLNode curr = this.getRoot();
     	while (curr != null) {
-    		if (curr.getKey() == k) {
+    		if (curr.getKey() == k) { // if we reached the wanted node, do as follows:
+    			// update out to be the XOR between out, curr.getValue(), and curr.getLeft.getXOR()
     			out = Boolean.logicalXor(out, curr.getValue());
     			if (curr.getLeft() != null) {
         			out = Boolean.logicalXor(out, curr.getLeft().getXOR());
     			}
     			break;
-    		} else if (k < curr.getKey()) {
+    		} else if (k < curr.getKey()) { // if node which holds the key @k is in the left sub-tree of curr, continue on with the searching process
     			curr = curr.getLeft();
-    		} else {
+    		} else { // if the node which holds the key @k is in the right sub-tree of curr, do as follows:
+    			// update out to be the XOR between out, curr.getValue(), and curr.getLeft.getXOR()
     			out = Boolean.logicalXor(out, curr.getValue());
     			if (curr.getLeft() != null) {
         			out = Boolean.logicalXor(out, curr.getLeft().getXOR());
     			}
-    			curr = curr.getRight();
+    			curr = curr.getRight(); // continue on with the searching process
     		}
     	}
     	
-    	return out;
+    	return out; 
     }
     
     	
     /**
      * public AVLNode successor
-     *
+     * <p>
      * given a node 'node' in the tree, return the successor of 'node' in the tree (or null if successor doesn't exist)
-     *
-     * @param node - the node whose successor should be returned
-     * @return the successor of 'node' if exists, null otherwise
-     * 
+     * <p>
+     * if the right child of @node exists, then return the node with the minimal key in the right sub-tree of @node
+     * else: 
+     * iterate through curr's parents until you reach a parent that its key is bigger than curr's key.
      * <p>
      * Complexity: O(log n)
      */
     public AVLNode successor(AVLNode node){
-        if (node.getRight() != null) {
+    	// initialize the curr variable 
+        if (node.getRight() != null) { // if node has a right child
         	AVLNode curr = node.getRight();
         	while (curr.getLeft() != null) {
         		curr = curr.getLeft();
         	}
         	return curr;
         }
-        AVLNode parent = node.getParent();
-        while (parent != null) {
-        	if (node != parent.getRight()) {
+        AVLNode parent = node.getParent(); // initialize the parent variable 
+        
+        // if node doesn't have a right child
+        while (parent != null) { // break the loop once we reach the root (the root is the only node in the tree whose parent is a null)
+        	if (node != parent.getRight()) { // if curr is paren't left child, break
         		break;
         	}
-        	node = parent;
+        	// prepare for the next iteration
+        	node = parent; 
         	parent = parent.getParent();
         }
+        // return the parent. if there was no successor, the while loop should have continued until it has reached the root, therefore the parent would be a null in that case, else the parent is the successor
         return parent;
     }
 
@@ -591,15 +641,20 @@ public class AVLTree {
      * precondition: this.search(k) != null
      * 
      * <p>
-     * Complexity: O(log n + k)
+     * Complexity: O(log(n) + k)
      */
-    public boolean succPrefixXor(int k){ // O(log(n) + N), while N is the amount of nodes whose keys are lower or equal to k, and while n is the size of the tree (so O(log(n)) is the height of the tree)
-    	AVLNode curr = this.root;
+    public boolean succPrefixXor(int k){
+    	// initializing the variable that we are going to return 
     	boolean output = false;
+    	
+    	// iterate until we reach the node with the minimal key in the tree
+    	AVLNode curr = this.root; 
     	while (curr.getLeft() != null) {
     		curr = curr.getLeft();
     	}
-    	while (curr != null) {
+    	
+    	// perform a successor call until we reach a node that holds a key greater than k
+    	while (curr != null) { // in each iteration, we are going to perform a XOR between output and the node 'curr', and assign the returned boolean value to output.
     		if (curr.getKey() > k) {
     			break;
     		}
@@ -610,6 +665,7 @@ public class AVLTree {
     }
 
 	
+    
     public int getTreeHeight(AVLNode node) {
         if (node == null) {
             return -1;
